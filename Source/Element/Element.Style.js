@@ -94,9 +94,8 @@ Element.implement({
 		}
 		if ((property == 'width' || property == 'height') && value.toString().indexOf('-') >= 0)
 		{
-			// don't set a negative width or height: MSIE6 croaks!
+			// [i_a] don't set a negative width or height: MSIE6 croaks!
 			//debugger;
-			//alert('bom!');
 			this.style[property] = '0px';
 			return this;
 		}
