@@ -96,14 +96,12 @@ Element.implement({
 		if ((property === 'width' || property === 'height') && value.toString().indexOf('-') >= 0)
 		{
 			// [i_a] don't set a negative width or height: MSIE6 croaks!
-			//debugger;
 			this.style[property] = '0px';
 			return this;
 		}
 		else if (property === 'zIndex' && value === 'auto')
 		{
 			// [i_a] MSIE6 croaks on this one; set to nil instead
-			//debugger;
 			this.style[property] = '';
 			return this;
 		}
