@@ -65,7 +65,7 @@ However it is not recommended to use more frameworks, the $ variable can be set 
 
 
 ### See Also:
- - MooTools Blogpost: [The Dollar Save Mode][]
+ - MooTools Blogpost: [The Dollar Safe Mode][]
 
 
 Function: $$ {#Window:dollars}
@@ -304,7 +304,7 @@ This is a "dynamic arguments" method. Properties passed in can be any of the 'se
 		// the 'events' property passes the object to Element:addEvents.
 		events: {
 			click: function(){ alert('click'); },
-			mouseover: function(){ this.addClass('over') }
+			mouseover: function(){ this.addClass('over'); }
 		},
 		//Any other property uses Element:setProperty.
 		id: 'documentBody'
@@ -448,7 +448,7 @@ Checks all descendants of this Element for a match.
 
 ### Arguments:
 
-1. el - (*mixed*) Can be an Element reference or string id.
+1. el - (*element*) The element to search for.
 
 ### Returns:
 
@@ -464,7 +464,7 @@ Checks all descendants of this Element for a match.
 
 ##### JavaScript
 
-	if ($('Darth_Vader').contains('Luke')) alert('Luke, I am your father.'); //tan tan tannn...
+	if ($('Darth_Vader').contains($('Luke'))) alert('Luke, I am your father.'); //tan tan tannn...
 
 
 
@@ -820,7 +820,7 @@ Clones the Element and returns the cloned one.
 
 ##### HTML
 
-	<div id="myElement"></div>
+	<div id="myElement">ciao</div>
 
 ##### JavaScript
 
@@ -1609,11 +1609,11 @@ Sets the innerHTML of the Element.
 
 #### Syntax:
 
-	myElement.set('html', [htmlString[, htmlString2[, htmlString3[, ..]]]);
+	myElement.set('html', html);
 
 #### Arguments:
 
-1. Any number of string parameters with HTML.
+1. html - (*string*) The new content as HTML string.
 
 #### Returns:
 
@@ -1627,7 +1627,7 @@ Sets the innerHTML of the Element.
 
 ##### JavaScript
 
-	$('myElement').set('html', '<div></div>', '<p></p>');
+	$('myElement').set('html', '<div></div><p></p>');
 
 ##### Resulting HTML
 
@@ -1851,12 +1851,65 @@ Elements Method: constructor {#Elements:constructor}
 - [$$][], [$][], [Element][], [Elements][], [Array][]
 
 
+Elements Method: append {#Elements:append}
+------------------------------------------
+
+Adds the items of the collection to this [Elements][] array, and return the this array.
+
+### Syntax:
+
+	elements.append(collection);
+
+### Arguments:
+
+1. collection - (*array*) [Elements][] array or an array of HTML Elements.
+
+### Returns:
+
+* (*array*) This [Elements][] array.
+
+### Notes:
+
+- This method doesn't process ([document:id][] or filters) the items of the array.
+
+
+Elements Method: concat {#Elements:concat}
+------------------------------------------
+
+Adds the element, or array of Elements, to this [Elements][] array, and returns a new [Elements][] array.
+
+### Syntax:
+
+	var newElements = elements.concat(element[, list, id, ...]]);
+
+### Arguments:
+
+1. element - (*mixed*) An HTML Element, or a string id.
+2. list, id, ... - (*mixed*) Additional [Elements][], array of ids, or string ids.
+
+### Returns:
+
+* (*array*) A new [Elements][] array.
+
+
+Elements Method: empty {#Elements:empty}
+------------------------------------------
+
+Removes every item from the [Elements][] array, and the empty array.
+
+### Syntax:
+
+	elements.empty();
+
+### Returns:
+
+* (*array*) This empty [Elements][] array.
+
 
 Elements Method: filter {#Elements:filter}
-----------------------------------------------
+------------------------------------------
 
-Filters a collection of elements by a given tag name.  This method will be able to filter by any selector.
-It also works like [Array:filter][], by filtering collection of elements with a function.
+Filters a collection of elements by a given css selector, or filtering function like [Array:filter][].
 
 
 ### Syntax:
@@ -1865,11 +1918,50 @@ It also works like [Array:filter][], by filtering collection of elements with a 
 
 ### Arguments:
 
-1. selector - (*mixed*) A single CSS selector.
+1. selector - (*mixed*) A single CSS selector, or filtering function.
 
 ### Returns:
 
 * (*array*) A subset of this [Elements][] instance.
+
+
+Elements Method: push {#Elements:push}
+--------------------------------------
+
+Adds the element, or elements, to the end of this [Elements][] array and returns the length of the array.
+
+
+### Syntax:
+
+	var length = elements.push(element[, id, ...]]);
+
+### Arguments:
+
+1. element - (*mixed*) An HTML Element, or a string id.
+2. id, ... - (*mixed*) Additional HTML Element, or string ids.
+
+### Returns:
+
+* (*number*) The new length of the [Elements][] array.
+
+
+Elements Method: unshift {#Elements:unshift}
+--------------------------------------------
+
+Adds the element, or elements, to the front of this [Elements][] array and returns the length of the array.
+
+### Syntax:
+
+	var length = elements.unshift(element[, id, ...]]);
+
+### Arguments:
+
+1. element - (*mixed*) An HTML Element, or a string id.
+2. id, ... - (*mixed*) Additional HTML Element, or string ids.
+
+### Returns:
+
+* (*number*) The new length of the [Elements][] array.
 
 
 Deprecated Functions {#Deprecated-Functions}
@@ -1891,6 +1983,61 @@ This method has been deprecated. Use [Element:contains][] instead.
 		return this !== element && this.contains(element);
 	});
 
+Element Method: injectBefore {#Deprecated-Functions:injectBefore}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:inject][] instead.
+
+Element Method: injectAfter {#Deprecated-Functions:injectAfter}
+---------------------------------------------------------------
+
+This method has been deprecated. Use [Element:inject][] instead.
+
+Element Method: injectBottom {#Deprecated-Functions:injectBottom}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:inject][] instead.
+
+Element Method: injectTop {#Deprecated-Functions:injectTop}
+-----------------------------------------------------------
+
+This method has been deprecated. Use [Element:inject][] instead.
+
+Element Method: injectInside {#Deprecated-Functions:injectInside}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:inject][] instead.
+
+Element Method: grabBefore {#Deprecated-Functions:grabBefore}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:grab][] instead.
+
+Element Method: grabAfter {#Deprecated-Functions:grabAfter}
+---------------------------------------------------------------
+
+This method has been deprecated. Use [Element:grab][] instead.
+
+Element Method: grabBottom {#Deprecated-Functions:grabBottom}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:grab][] instead.
+
+Element Method: grabTop {#Deprecated-Functions:grabTop}
+-----------------------------------------------------------
+
+This method has been deprecated. Use [Element:grab][] instead.
+
+Element Method: grabInside {#Deprecated-Functions:grabInside}
+-----------------------------------------------------------------
+
+This method has been deprecated. Use [Element:grab][] instead.
+
+
+Elements Method: extend {#Deprecated-Functions:extend}
+------------------------------------------------------
+
+This method has been deprecated. Use [Elements:append][] instead.
 
 
 [document:id]: #Window:document-id
@@ -1902,8 +2049,11 @@ This method has been deprecated. Use [Element:contains][] instead.
 
 [Element]: #Element
 [Elements]: #Elements
+[Elements:append]: #Elements:append
+[Element:inject]: #Element:inject
 [Element:set]: #Element:set
 [Element:get]: #Element:get
+[Element:grab]: #Element:grab
 [Element:erase]: #Element:erase
 [Element:setProperty]: #Element:setProperty
 [Element:getProperty]: #Element:getProperty
@@ -1918,7 +2068,7 @@ This method has been deprecated. Use [Element:contains][] instead.
 [Element:addEvents]: /core/Element/Element.Event#Element:addEvents
 [Element:setStyles]: /core/Element/Element.Style#Element:setStyles
 
-[The Dollar Save Mode]: http://mootools.net/blog/2009/06/22/the-dollar-safe-mode/
+[The Dollar Safe Mode]: http://mootools.net/blog/2009/06/22/the-dollar-safe-mode/
 
 [MDC Element:removeChild]: https://developer.mozilla.org/En/DOM/Node.removeChild
 [MDC Element:replaceChild]: https://developer.mozilla.org/En/DOM/Node.replaceChild
