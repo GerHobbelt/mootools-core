@@ -1,7 +1,7 @@
 [submodule "Packager"]
 	path = Packager
-	url = git://github.com/kamicane/packager.git
+	url = git@github.com:GerHobbelt/packager.git
 [submodule "Specs/Runner"]
 	path = Specs/Runner
-	url = git://github.com/mootools/mootools-runner.git
+	url = git@github.com:GerHobbelt/mootools-runner.git
 
