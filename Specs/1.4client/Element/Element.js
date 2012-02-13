@@ -26,6 +26,33 @@ describe('Element', function(){
 			expect(div.getProperty('random')).toEqual('attribute');
 		});
 
+		it('should get custom attributes in html', function(){
+			var div = new Element('div', {html: '<div data-load="typical"></div>'}).getFirst();
+			expect(div.get('data-load')).toEqual('typical');
+
+			div = new Element('div', {html: '<div data-custom></div>'}).getFirst();
+			expect(div.get('data-custom')).toEqual('');
+
+			div = new Element('div', {html: '<div data-custom="nested"><a data-custom="other"></a></div>'}).getFirst();
+			expect(div.get('data-custom')).toEqual('nested');
+
+			div = new Element('div', {html: '<div><a data-custom="other"></a></div>'}).getFirst();
+			expect(div.get('data-custom')).toEqual(null);
+
+			div = new Element('div', {html: '<a data-custom="singular" href="#">href</a>'}).getFirst();
+			expect(div.get('data-custom')).toEqual('singular');
+
+			div = new Element('div', {html: '<div class="><" data-custom="evil attribute values"></div>'}).getFirst();
+			expect(div.get('data-custom')).toEqual('evil attribute values');
+
+			div = new Element('div', {html: '<div class="> . <" data-custom="aggrevated evil attribute values"></div>'}).getFirst();
+			expect(div.get('data-custom')).toEqual('aggrevated evil attribute values');
+
+			div = new Element('div', {html: '<a href="#"> data-custom="singular"</a>'}).getFirst();
+			expect(div.get('data-custom')).toEqual(null);
+		});
+
+
 	});
 
 	describe('Element.set', function(){
@@ -35,6 +62,11 @@ describe('Element', function(){
 			it('should return `null` when the value of a input element is set to `undefined`', function(){
 				var value;
 				expect(new Element('input', {value: value}).get('value')).toEqual('');
+			});
+
+			it('should set a falsey value and not an empty string', function(){
+				expect(new Element('input', {value: false}).get('value')).toEqual('false');
+				expect(new Element('input', {value: 0}).get('value')).toEqual('0');
 			});
 
 		});

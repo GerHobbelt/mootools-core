@@ -71,7 +71,10 @@ new Type('Element', Element).mirror(function(name){
 if (!Browser.Element){
 	Element.parent = Object;
 
-	Element.Prototype = {'$family': Function.from('element').hide()};
+	Element.Prototype = {
+		'$constructor': Element,
+		'$family': Function.from('element').hide()
+	};
 
 	Element.mirror(function(name, method){
 		Element.Prototype[name] = method;
@@ -194,15 +197,17 @@ if (object[1] == 1) Elements.implement('splice', function(){
 	return result;
 }.protect());
 
-Elements.implement(Array.prototype);
+Array.forEachMethod(function(method, name){
+	Elements.implement(name, method);
+});
 
 Array.mirror(Elements);
 
 /*<ltIE8>*/
-var createElementAcceptsHTML = Function.attempt(function(){
-	var x = document.createElement('<input name=x>');
-	return (x.name == 'x');
-});
+var createElementAcceptsHTML;
+try {
+    createElementAcceptsHTML = (document.createElement('<input name=x>').name == 'x');
+} catch (e){}
 
 var escapeQuotes = function(html){
 	return ('' + html).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
@@ -261,7 +266,11 @@ Document.implement({
 			element: function(el, nocash){
 				Slick.uidOf(el);
 				if (!nocash && !el.$family && !(/^(?:object|embed)$/i).test(el.tagName)){
-					el._fireEvent = el.fireEvent;
+					var fireEvent = el.fireEvent;
+					// wrapping needed in IE7, or else crash
+					el._fireEvent = function(type, event){
+						return fireEvent(type, event);
+					};
 					Object.append(el, Element.Prototype);
 				}
 				return el;
@@ -564,7 +573,7 @@ Object.append(propertySetters, {
 	},
 
 	'value': function(node, value){
-		node.value = value || '';
+		node.value = (value != null) ? value : '';
 	}
 
 });
@@ -600,11 +609,12 @@ el = null;
 var input = document.createElement('input');
 input.value = 't';
 input.type = 'submit';
-if (input.value != 't') propertySetters.type = function(node, value){
-	var inputValue = node.value;
-	node.type = value;
-	node.value = inputValue;
+if (input.value != 't') propertySetters.type = function(node, type){
+	var value = node.value;
+	node.type = type;
+	node.value = value;
 };
+input = null;
 /*</IE>*/
 
 /* getProperty, setProperty */
@@ -615,7 +625,6 @@ var pollutesGetAttribute = (function(div){
 	return (div.getAttribute('random') == 'attribute');
 })(document.createElement('div'));
 
-if (pollutesGetAttribute) var attributeWhiteList = {};
 /* <ltIE9> */
 
 Element.implement({
@@ -625,8 +634,15 @@ Element.implement({
 		if (setter){
 			setter(this, value);
 		} else {
+			/* <ltIE9> */
+			if (pollutesGetAttribute) var attributeWhiteList = this.retrieve('$attributeWhiteList', {});
+			/* </ltIE9> */
+
 			if (value == null){
 				this.removeAttribute(name);
+				/* <ltIE9> */
+				if (pollutesGetAttribute) delete attributeWhiteList[name];
+				/* </ltIE9> */
 			} else {
 				this.setAttribute(name, value);
 				/* <ltIE9> */
@@ -646,9 +662,15 @@ Element.implement({
 		var getter = propertyGetters[name.toLowerCase()];
 		if (getter) return getter(this);
 		/* <ltIE9> */
-		if (pollutesGetAttribute && !attributeWhiteList[name]){
-			var attr = this.getAttributeNode(name);
-			if (!attr || attr.expando) return null;
+		if (pollutesGetAttribute){
+			var attr = this.getAttributeNode(name), attributeWhiteList = this.retrieve('$attributeWhiteList', {});
+			if (!attr) return null;
+			if (attr.expando && !attributeWhiteList[name]){
+				var outer = this.outerHTML;
+				// segment by the opening tag and find mention of attribute name
+				if (outer.substr(0, outer.search(/\/?['"]?>(?![^<]*<['"])/)).indexOf(name) < 0) return null;
+				attributeWhiteList[name] = true;
+			}
 		}
 		/* </ltIE9> */
 		var result = Slick.getAttribute(this, name);
@@ -965,9 +987,10 @@ var supportsTableInnerHTML = Function.attempt(function(){
 var tr = document.createElement('tr'), html = '<td></td>';
 tr.innerHTML = html;
 var supportsTRInnerHTML = (tr.innerHTML == html);
+tr = null;
 /*</ltFF4>*/
 
-if (!supportsTableInnerHTML || !supportsTRInnerHTML){
+if (!supportsTableInnerHTML || !supportsTRInnerHTML || !supportsHTML5Elements){
 
 	Element.Properties.html.set = (function(set){
 
